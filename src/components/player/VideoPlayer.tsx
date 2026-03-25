@@ -22,16 +22,16 @@ export function VideoPlayer({ courseId, moduleId }: VideoPlayerProps) {
     }
   };
   const handleTimeUpdate = () => {
-    if (videoRef.current && videoRef.current.duration) {
+    if (videoRef.current) {
       const current = (videoRef.current.currentTime / videoRef.current.duration) * 100;
-      setProgress(isNaN(current) ? 0 : current);
+      setProgress(current);
       if (current > 95) {
         completeModule(courseId, moduleId);
       }
     }
   };
   const handleSeek = (value: number[]) => {
-    if (videoRef.current && videoRef.current.duration) {
+    if (videoRef.current) {
       const time = (value[0] / 100) * videoRef.current.duration;
       videoRef.current.currentTime = time;
       setProgress(value[0]);
@@ -45,17 +45,17 @@ export function VideoPlayer({ courseId, moduleId }: VideoPlayerProps) {
         onEnded={() => setIsPlaying(false)}
         className="w-full h-full object-cover"
         poster="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&auto=format&fit=crop&q=80"
-        muted={isMuted}
       >
         <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
       </video>
+      {/* Glass Overlay Controls */}
       <div className={cn(
         "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity duration-300",
         isPlaying ? "opacity-0 group-hover:opacity-100" : "opacity-100"
       )}>
-        <Button
-          variant="ghost"
-          size="icon"
+        <Button 
+          variant="ghost" 
+          size="icon" 
           onClick={togglePlay}
           className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/40 hover:scale-110 transition-all"
         >
@@ -67,10 +67,10 @@ export function VideoPlayer({ courseId, moduleId }: VideoPlayerProps) {
         isPlaying ? "translate-y-full group-hover:translate-y-0" : "translate-y-0"
       )}>
         <div className="space-y-4">
-          <Slider
-            value={[progress]}
-            max={100}
-            step={0.1}
+          <Slider 
+            value={[progress]} 
+            max={100} 
+            step={0.1} 
             onValueChange={handleSeek}
             className="cursor-pointer"
           />
