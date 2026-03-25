@@ -1,6 +1,6 @@
 # Cloudflare AI Chat Starter Template
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/mikeschlottig/nexuslms-next-generation-ai-powered-learning-platform)
 
 A production-ready full-stack AI chat application built with **Cloudflare Workers**, **Durable Objects**, and **Cloudflare AI Gateway**. Features multi-session conversations, real-time streaming, tool calling (web search, weather, custom MCP tools), and a modern React UI.
 
@@ -123,7 +123,7 @@ All chat endpoints under `/api/chat/{sessionId}`:
 4. **Custom Domain** (optional):
    Update `wrangler.jsonc` with `routes` and redeploy.
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/mikeschlottig/nexuslms-next-generation-ai-powered-learning-platform)
 
 ## 🐛 Troubleshooting
 
