@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { Node, Edge } from 'reactflow';
 export type ModuleType = 'video' | 'audio' | 'markdown' | 'canvas';
 export interface Module {
   id: string;
@@ -7,6 +8,10 @@ export interface Module {
   content: string;
   duration?: string;
   isCompleted: boolean;
+  canvasData?: {
+    nodes: Node[];
+    edges: Edge[];
+  };
 }
 export interface Course {
   id: string;
@@ -39,7 +44,23 @@ export const useLMSStore = create<LMSState>((set) => ({
       modules: [
         { id: 'm1', title: 'Introduction to Atomic Design', type: 'video', content: 'vid-1', duration: '12:05', isCompleted: true },
         { id: 'm2', title: 'Zustand vs Redux: The Ultimate Guide', type: 'markdown', content: '# Comparison...', isCompleted: true },
-        { id: 'm3', title: 'Interactive State Diagram', type: 'canvas', content: 'canvas-1', isCompleted: false },
+        { 
+          id: 'm3', 
+          title: 'Interactive State Diagram', 
+          type: 'canvas', 
+          content: 'canvas-1', 
+          isCompleted: false,
+          canvasData: {
+            nodes: [
+              { id: '1', position: { x: 0, y: 0 }, data: { label: 'User Action' }, type: 'input', style: { borderRadius: '12px', border: '2px solid #4F46E5', padding: '10px' } },
+              { id: '2', position: { x: 0, y: 100 }, data: { label: 'Store Dispatch' }, style: { borderRadius: '12px', border: '2px solid #F97316', padding: '10px' } },
+              { id: '3', position: { x: 0, y: 200 }, data: { label: 'View Update' }, type: 'output', style: { borderRadius: '12px', border: '2px solid #10B981', padding: '10px' } },
+            ],
+            edges: [
+              { id: 'e1-2', source: '1', target: '2', animated: true },
+            ]
+          }
+        },
         { id: 'm4', title: 'Performance Optimization Deep Dive', type: 'audio', content: 'aud-1', duration: '18:45', isCompleted: false },
       ]
     },

@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { VideoPlayer } from '@/components/player/VideoPlayer';
 import { AudioPlayer } from '@/components/player/AudioPlayer';
 import { MarkdownView } from '@/components/player/MarkdownView';
+import { CanvasView } from '@/components/player/CanvasView';
 import { cn } from '@/lib/utils';
 export function CoursePlayer() {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +22,7 @@ export function CoursePlayer() {
   const setActiveModule = useLMSStore(s => s.setActiveModule);
   const toggleAiSidebar = useLMSStore(s => s.toggleAiSidebar);
   const course = useMemo(() => courses.find(c => c.id === id), [courses, id]);
-  const activeModule = useMemo(() => 
+  const activeModule = useMemo(() =>
     course?.modules.find(m => m.id === activeModuleId) || course?.modules[0]
   , [course, activeModuleId]);
   useEffect(() => {
@@ -51,11 +52,16 @@ export function CoursePlayer() {
       case 'video': return <VideoPlayer courseId={course.id} moduleId={activeModule.id} />;
       case 'audio': return <AudioPlayer courseId={course.id} moduleId={activeModule.id} title={activeModule.title} instructor={course.instructor} />;
       case 'markdown': return <MarkdownView content={activeModule.content} courseId={course.id} moduleId={activeModule.id} isCompleted={activeModule.isCompleted} />;
-      default: return (
-        <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-3xl">
-          Canvas Module implementation coming in Phase 3
-        </div>
+      case 'canvas': return (
+        <CanvasView 
+          courseId={course.id} 
+          moduleId={activeModule.id} 
+          initialNodes={activeModule.canvasData?.nodes || []}
+          initialEdges={activeModule.canvasData?.edges || []}
+          isCompleted={activeModule.isCompleted}
+        />
       );
+      default: return <div className="p-12 text-center">Unknown module type</div>;
     }
   };
   const SyllabusList = () => (
@@ -135,9 +141,9 @@ export function CoursePlayer() {
             </div>
           </div>
           <footer className="p-4 border-t bg-muted/20 flex items-center justify-between">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               disabled={!prevModule}
               onClick={() => prevModule && setActiveModule(prevModule.id)}
             >
@@ -151,8 +157,8 @@ export function CoursePlayer() {
                  ))}
                </div>
             </div>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               disabled={!nextModule}
               onClick={() => nextModule && setActiveModule(nextModule.id)}
               className="bg-indigo-600 hover:bg-indigo-700"

@@ -24,9 +24,9 @@ export function AudioPlayer({ courseId, moduleId, title, instructor }: AudioPlay
     }
   };
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
+    if (audioRef.current && audioRef.current.duration) {
       const current = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-      setProgress(current);
+      setProgress(isNaN(current) ? 0 : current);
       if (current > 95) completeModule(courseId, moduleId);
     }
   };
@@ -35,10 +35,16 @@ export function AudioPlayer({ courseId, moduleId, title, instructor }: AudioPlay
     setSpeed(nextSpeed);
     if (audioRef.current) audioRef.current.playbackRate = nextSpeed;
   };
+  const handleSeek = (value: number[]) => {
+    if (audioRef.current && audioRef.current.duration) {
+      const time = (value[0] / 100) * audioRef.current.duration;
+      audioRef.current.currentTime = time;
+      setProgress(value[0]);
+    }
+  };
   return (
     <div className="max-w-2xl mx-auto py-12">
       <div className="bg-card border shadow-soft rounded-4xl p-8 md:p-12 space-y-8 relative overflow-hidden">
-        {/* Animated Background Element */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
         <div className="flex flex-col items-center text-center space-y-6">
           <div className={cn(
@@ -48,8 +54,8 @@ export function AudioPlayer({ courseId, moduleId, title, instructor }: AudioPlay
             <div className="w-40 h-40 rounded-full border-4 border-white/20 flex items-center justify-center overflow-hidden">
                 <div className="flex items-end gap-1 h-12">
                    {[1,2,3,4,5,4,3,2,1].map((h, i) => (
-                     <div 
-                        key={i} 
+                     <div
+                        key={i}
                         className={cn(
                           "w-1.5 bg-white rounded-full transition-all duration-300",
                           isPlaying ? "animate-audio-wave" : "h-2"
@@ -66,9 +72,12 @@ export function AudioPlayer({ courseId, moduleId, title, instructor }: AudioPlay
           </div>
         </div>
         <div className="space-y-6">
-          <Slider value={[progress]} max={100} onValueChange={(v) => {
-            if (audioRef.current) audioRef.current.currentTime = (v[0] / 100) * audioRef.current.duration;
-          }} />
+          <Slider 
+            value={[progress]} 
+            max={100} 
+            step={0.1}
+            onValueChange={handleSeek} 
+          />
           <div className="flex items-center justify-between">
             <Button variant="outline" size="sm" onClick={handleSpeed} className="w-16 rounded-full font-mono">
               {speed}x
@@ -89,7 +98,7 @@ export function AudioPlayer({ courseId, moduleId, title, instructor }: AudioPlay
             </Button>
           </div>
         </div>
-        <audio 
+        <audio
           ref={audioRef}
           onTimeUpdate={handleTimeUpdate}
           onEnded={() => setIsPlaying(false)}
