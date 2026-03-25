@@ -1,138 +1,111 @@
-// Home page of the app.
-// Currently a demo placeholder "please wait" screen.
-// Replace this file with your actual app UI. Do not delete it to use some other file as homepage. Simply replace the entire contents of this file.
-
-import { useEffect, useMemo, useState } from 'react'
-import { Sparkles } from 'lucide-react'
-
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { HAS_TEMPLATE_DEMO, TemplateDemo } from '@/components/TemplateDemo'
-import { Button } from '@/components/ui/button'
-import { Toaster, toast } from '@/components/ui/sonner'
-
-function formatDuration(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000))
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
+import React from 'react';
+import { AppLayout } from '@/components/layout/AppLayout';
+import { useLMSStore } from '@/store/lmsStore';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Link } from 'react-router-dom';
+import { PlayCircle, Clock, BookOpen, Star, TrendingUp } from 'lucide-react';
 export function HomePage() {
-  const [coins, setCoins] = useState(0)
-  const [isRunning, setIsRunning] = useState(false)
-  const [startedAt, setStartedAt] = useState<number | null>(null)
-  const [elapsedMs, setElapsedMs] = useState(0)
-
-  useEffect(() => {
-    if (!isRunning || startedAt === null) return
-
-    const t = setInterval(() => {
-      setElapsedMs(Date.now() - startedAt)
-    }, 250)
-
-    return () => clearInterval(t)
-  }, [isRunning, startedAt])
-
-  const formatted = useMemo(() => formatDuration(elapsedMs), [elapsedMs])
-
-  const onPleaseWait = () => {
-    setCoins((c) => c + 1)
-
-    if (!isRunning) {
-      // Resume from the current elapsed time
-      setStartedAt(Date.now() - elapsedMs)
-      setIsRunning(true)
-      toast.success('Building your app…', {
-        description: "Hang tight — we're setting everything up.",
-      })
-      return
-    }
-
-    setIsRunning(false)
-    toast.info('Still working…', {
-      description: 'You can come back in a moment.',
-    })
-  }
-
-  const onReset = () => {
-    setCoins(0)
-    setIsRunning(false)
-    setStartedAt(null)
-    setElapsedMs(0)
-    toast('Reset complete')
-  }
-
-  const onAddCoin = () => {
-    setCoins((c) => c + 1)
-    toast('Coin added')
-  }
-
+  const courses = useLMSStore(s => s.courses);
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
-      <ThemeToggle />
-      <div className="absolute inset-0 bg-gradient-rainbow opacity-10 dark:opacity-20 pointer-events-none" />
-
-      <div className="text-center space-y-8 relative z-10 animate-fade-in w-full">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary floating">
-            <Sparkles className="w-8 h-8 text-white rotating" />
+    <AppLayout container>
+      <div className="space-y-8 animate-fade-in">
+        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-4xl p-8 md:p-12 text-white shadow-glow-lg">
+          <div className="relative z-10 max-w-2xl space-y-4">
+            <h1 className="text-4xl md:text-6xl font-display font-bold">Welcome back, Explorer!</h1>
+            <p className="text-lg text-white/80 text-pretty">
+              Your learning journey is 45% complete. You're doing great! Ready to dive back into "Advanced React Architecture"?
+            </p>
+            <div className="flex gap-4 pt-4">
+              <Button size="lg" className="bg-white text-indigo-600 hover:bg-white/90 font-semibold rounded-full">
+                Resume Learning
+              </Button>
+              <Button size="lg" variant="outline" className="border-white/40 bg-white/10 hover:bg-white/20 text-white rounded-full">
+                View Schedule
+              </Button>
+            </div>
           </div>
-        </div>
-
-        <div className="space-y-3">
-          <h1 className="text-5xl md:text-7xl font-display font-bold text-balance leading-tight">
-            Creating your <span className="text-gradient">app</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto text-pretty">
-            Your application would be ready soon.
-          </p>
-        </div>
-
-        {HAS_TEMPLATE_DEMO ? (
-          <div className="max-w-5xl mx-auto text-left">
-            <TemplateDemo />
+          <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 pointer-events-none">
+            <TrendingUp className="w-full h-full rotate-12" />
           </div>
-        ) : (
-          <>
-            <div className="flex justify-center gap-4">
-              <Button
-                size="lg"
-                onClick={onPleaseWait}
-                className="btn-gradient px-8 py-4 text-lg font-semibold hover:-translate-y-0.5 transition-all duration-200"
-                aria-live="polite"
-              >
-                Please Wait
-              </Button>
+        </section>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold tracking-tight">Enrolled Courses</h2>
+              <Button variant="link">See all</Button>
             </div>
-
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div>
-                Time elapsed:{' '}
-                <span className="font-medium tabular-nums text-foreground">{formatted}</span>
-              </div>
-              <div>
-                Coins:{' '}
-                <span className="font-medium tabular-nums text-foreground">{coins}</span>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {courses.map((course) => (
+                <Card key={course.id} className="group hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden border-none shadow-soft">
+                  <div className="aspect-video relative overflow-hidden">
+                    <img src={course.thumbnail} alt={course.title} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+                    <div className="absolute bottom-3 left-3 flex gap-2">
+                       <span className="bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1">
+                         <Clock className="w-3 h-3" /> 4h 20m
+                       </span>
+                    </div>
+                  </div>
+                  <CardHeader className="p-4 space-y-1">
+                    <CardTitle className="text-lg line-clamp-1 group-hover:text-primary transition-colors">{course.title}</CardTitle>
+                    <CardDescription className="text-xs">{course.instructor}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Progress</span>
+                        <span>{course.progress}%</span>
+                      </div>
+                      <Progress value={course.progress} className="h-1.5" />
+                    </div>
+                  </CardContent>
+                  <CardFooter className="p-4 pt-0">
+                    <Button asChild className="w-full rounded-xl">
+                      <Link to={`/course/${course.id}`}>
+                        <PlayCircle className="mr-2 w-4 h-4" /> Continue
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
             </div>
-
-            <div className="flex justify-center gap-2">
-              <Button variant="outline" size="sm" onClick={onReset}>
-                Reset
-              </Button>
-              <Button variant="outline" size="sm" onClick={onAddCoin}>
-                Add Coin
-              </Button>
-            </div>
-          </>
-        )}
+          </div>
+          <aside className="space-y-6">
+            <h2 className="text-2xl font-bold tracking-tight">Learning Stats</h2>
+            <Card className="rounded-2xl shadow-soft border-none">
+              <CardContent className="p-6 space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Courses Completed</p>
+                    <p className="text-2xl font-bold">12</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center">
+                    <Star className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Skill Points</p>
+                    <p className="text-2xl font-bold">2,450</p>
+                  </div>
+                </div>
+                <div className="pt-4 border-t">
+                  <h3 className="font-semibold mb-3">Today's Goal</h3>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Watching: 45m / 60m</span>
+                  </div>
+                  <Progress value={75} className="h-1 bg-muted" />
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
+        </div>
       </div>
-
-      <footer className="absolute bottom-8 text-center text-muted-foreground/80">
-        <p>Powered by Cloudflare</p>
-      </footer>
-
-      <Toaster richColors closeButton />
-    </div>
-  )
+    </AppLayout>
+  );
 }
